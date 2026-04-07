@@ -10,6 +10,7 @@ from src.core.logger import get_logger
 from langchain_core.prompts import ChatPromptTemplate
 from src.services.ranking_service import rank_products
 from src.rag.prompts import PROMPTS
+from src.utils.cache import get_cache, set_cache
 
 logger = get_logger()
 
@@ -29,7 +30,11 @@ class SearchService:
         # Parse query
         filters = parse_query(user_query)
         logger.info(f"Parsed filters: {filters}")
-
+        
+        cached = get_cache(user_query)
+        if cached:
+            return cached
+        
         #  Hybrid Retrieval (Vector + Filter)
 
         # 1. Semantic search
@@ -76,6 +81,8 @@ class SearchService:
 
         # Safe parse
         results = safe_json_loads(raw_output, [])
+
+        set_cache(user_query, results)
 
         duration = time.time() - start_time
         logger.info(f"Search completed in {duration:.2f}s")
