@@ -1,0 +1,38 @@
+[
+  {
+    "id": "P001",
+    "name": "Toyota Corolla Brake Pads",
+    "brand": "Toyota",
+    "category": "brake pads",
+    "price": 75,
+    "vehicle": "Toyota Corolla",
+    "description": "High-quality OEM brake pads for Toyota Corolla"
+  },
+  {
+    "id": "P002",
+    "name": "Honda Civic Brake Pads",
+    "brand": "Honda",
+    "category": "brake pads",
+    "price": 65,
+    "vehicle": "Honda Civic",
+    "description": "Durable brake pads for Honda Civic"
+  },
+  {
+    "id": "P003",
+    "name": "Toyota Camry Premium Brake Pads",
+    "brand": "Toyota",
+    "category": "brake pads",
+    "price": 120,
+    "vehicle": "Toyota Camry",
+    "description": "Premium ceramic brake pads for Toyota Camry"
+  },
+  {
+    "id": "P004",
+    "name": "Toyota Universal Brake Pads",
+    "brand": "Toyota",
+    "category": "brake pads",
+    "price": 90,
+    "vehicle": "Toyota",
+    "description": "Compatible with multiple Toyota models"
+  }
+]
