@@ -9,6 +9,7 @@ from src.utils.retry import retry
 from src.core.logger import get_logger
 from langchain_core.prompts import ChatPromptTemplate
 from src.services.ranking_service import rank_products
+from src.rag.prompts import PROMPTS
 
 logger = get_logger()
 
@@ -56,24 +57,8 @@ class SearchService:
             for p in products
         ])
 
-        prompt = ChatPromptTemplate.from_template(
-            """
-            You are an e-commerce assistant.
-
-            Return ONLY valid JSON array.
-
-            Format:
-            [
-            {{"id": "...", "name": "...", "price": number, "reason": "..."}}
-            ]
-
-            User Query:
-            {query}
-
-            Products:
-            {context}
-            """
-        )
+        prompt_template = PROMPTS["v2"]
+        prompt = ChatPromptTemplate.from_template(prompt_template)
 
         chain = prompt | self.llm_provider.llm
 
