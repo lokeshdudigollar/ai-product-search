@@ -46,7 +46,7 @@ flowchart TD
     B --> C[SearchService]
 
     C --> D[Query Parser]
-    C --> E["Vector Search (FAISS)"]
+    C --> E[Vector Search (FAISS)]
     C --> F[Ranking Layer]
 
     E --> F
@@ -57,8 +57,8 @@ flowchart TD
 
     C --> J[Cache]
 
----
 
+---
 ## Tech Stack
 
 - **Backend**: FastAPI
