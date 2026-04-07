@@ -1,29 +1,32 @@
+import time
 from typing import List
 
 from src.repositories.product_repository import ProductRepository
 from src.rag.query_parser import parse_query
-from src.models.product import Product
-
-from langchain_openai import ChatOpenAI
+from src.services.llm_provider import LLMProvider
+from src.utils.json_parser import safe_json_loads
+from src.utils.retry import retry
+from src.core.logger import get_logger
 from langchain_core.prompts import ChatPromptTemplate
-from src.core.config import settings
-import json
+
+logger = get_logger()
 
 
 class SearchService:
-    def __init__(self, repo: ProductRepository):
+    def __init__(self, repo: ProductRepository, llm_provider: LLMProvider):
         self.repo = repo
-        self.llm = ChatOpenAI(
-            temperature=0.3,
-            openai_api_key=settings.OPENAI_API_KEY,
-            model=settings.MODEL_NAME,
-        )
+        self.llm_provider = llm_provider
 
     def search(self, user_query: str) -> List[dict]:
-        # Step 1: Parse query
-        filters = parse_query(user_query)
+        start_time = time.time()
 
-        # Step 2: Retrieve products
+        logger.info(f"Search started: {user_query}")
+
+        # Parse query
+        filters = parse_query(user_query)
+        logger.info(f"Parsed filters: {filters}")
+
+        # Retrieve products
         products = self.repo.search(
             query=filters.get("query"),
             max_price=filters.get("max_price"),
@@ -31,20 +34,23 @@ class SearchService:
             vehicle=filters.get("vehicle"),
         )
 
-        # Step 3: Build context
+        logger.info(f"Products retrieved: {len(products)}")
+
+        if not products:
+            return []
+
         context = "\n".join([
-            f"{p.name} - ${p.price} - {p.description}"
+            f"{p.id} | {p.name} | ${p.price} | {p.description}"
             for p in products
         ])
 
-        # Step 4: LLM reasoning
         prompt = ChatPromptTemplate.from_template(
             """
             You are an e-commerce assistant.
 
-            Based on user query and product list, return best matches.
+            Return ONLY valid JSON array.
 
-            Return JSON:
+            Format:
             [
             {{"id": "...", "name": "...", "price": number, "reason": "..."}}
             ]
@@ -57,13 +63,24 @@ class SearchService:
             """
         )
 
-        chain = prompt | self.llm
-        response = chain.invoke({
-            "query": user_query,
-            "context": context
-        })
+        chain = prompt | self.llm_provider.llm
 
-        try:
-            return json.loads(response.content)
-        except Exception:
-            return []
+        def llm_call():
+            response = self.llm_provider.invoke(chain, {
+                "query": user_query,
+                "context": context
+            })
+            return response.content
+
+        # Retry LLM
+        raw_output = retry(llm_call)
+
+        logger.info(f"LLM raw output: {raw_output}")
+
+        # Safe parse
+        results = safe_json_loads(raw_output, [])
+
+        duration = time.time() - start_time
+        logger.info(f"Search completed in {duration:.2f}s")
+
+        return results

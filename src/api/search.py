@@ -4,6 +4,7 @@ from typing import List, Optional
 from src.models.product import Product
 from src.repositories.product_repository import ProductRepository
 from src.core.dependencies import get_product_repository
+from src.services.llm_provider import LLMProvider
 
 router = APIRouter()
 
@@ -26,7 +27,9 @@ def ai_search(
     request: SearchRequest,
     repo: ProductRepository = Depends(get_product_repository),
 ):
-    service = SearchService(repo)
+
+    llm_provider = LLMProvider()
+    service = SearchService(repo, llm_provider)
 
     results = service.search(request.query)
 
