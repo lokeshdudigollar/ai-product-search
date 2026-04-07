@@ -40,13 +40,13 @@ Structured JSON Response
 
 ---
 
-```mermaid
+````mermaid
 flowchart TD
     A[User Query] --> B[FastAPI]
     B --> C[SearchService]
 
     C --> D[Query Parser]
-    C --> E[Vector Search (FAISS)]
+    C --> E["Vector Search (FAISS)"]
     C --> F[Ranking Layer]
 
     E --> F
@@ -56,7 +56,6 @@ flowchart TD
     H --> I[Structured JSON Response]
 
     C --> J[Cache]
-```
 
 ---
 
@@ -79,7 +78,7 @@ cd ai-product-search
 python -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
-```
+````
 
 ---
 
