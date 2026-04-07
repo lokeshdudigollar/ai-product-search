@@ -6,6 +6,8 @@ from src.repositories.product_repository import ProductRepository
 from src.core.dependencies import get_product_repository
 from src.services.llm_provider import LLMProvider
 from src.core.dependencies import get_llm_provider
+from src.services.embedding_service import EmbeddingService
+from src.core.vector_init import build_vector_store
 
 router = APIRouter()
 
@@ -29,8 +31,9 @@ def ai_search(
     repo: ProductRepository = Depends(get_product_repository),
     llm_provider: LLMProvider = Depends(get_llm_provider),
 ):
-
-    service = SearchService(repo, llm_provider)
+    embedder = EmbeddingService()
+    vector_store = build_vector_store(repo)
+    service = SearchService(repo, llm_provider, vector_store, embedder)
 
     results = service.search(request.query)
 
