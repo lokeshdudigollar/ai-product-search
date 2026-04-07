@@ -1,1 +1,7 @@
-print("Initial setup")
+from fastapi import FastAPI
+
+app = FastAPI(title="AI Product Search Assistant")
+
+@app.get("/health")
+def health_check():
+    return {"status": "ok"}
