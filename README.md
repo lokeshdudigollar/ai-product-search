@@ -71,7 +71,6 @@ flowchart TD
 ---
 
 ## Setup
-
 ```bash
 git clone <your-repo>
 cd ai-product-search
