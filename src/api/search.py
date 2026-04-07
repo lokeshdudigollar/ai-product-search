@@ -17,3 +17,17 @@ def search_products(
     repo: ProductRepository = Depends(get_product_repository),
 ):
     return repo.search(query, max_price, brand, vehicle)
+
+from src.services.search_service import SearchService
+from src.models.search import SearchRequest, SearchResponse
+
+@router.post("/ai-search", response_model=SearchResponse)
+def ai_search(
+    request: SearchRequest,
+    repo: ProductRepository = Depends(get_product_repository),
+):
+    service = SearchService(repo)
+
+    results = service.search(request.query)
+
+    return {"results": results}
