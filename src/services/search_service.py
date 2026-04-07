@@ -8,6 +8,7 @@ from src.utils.json_parser import safe_json_loads
 from src.utils.retry import retry
 from src.core.logger import get_logger
 from langchain_core.prompts import ChatPromptTemplate
+from src.services.ranking_service import rank_products
 
 logger = get_logger()
 
@@ -41,6 +42,9 @@ class SearchService:
             and (not filters.get("brand") or filters["brand"].lower() in p.brand.lower())
             and (not filters.get("vehicle") or filters["vehicle"].lower() in p.vehicle.lower())
         ]
+
+        # 3. ranking
+        products = rank_products(products, user_query)
 
         logger.info(f"Products retrieved: {len(products)}")
 
