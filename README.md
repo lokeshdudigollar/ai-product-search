@@ -1,6 +1,6 @@
 # AI Product Search Assistant (RAG-based)
 
-An intelligent product search system that uses **Retrieval-Augmented Generation (RAG)** to understand user queries and return relevant product recommendations.
+An intelligent product search system that uses **Retrieval-Augmented Generation (RAG)** to understand user queries and return relevant product recommendations. Built as a demo for ecommerce client
 
 ---
 
